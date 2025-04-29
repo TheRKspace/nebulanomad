@@ -52,7 +52,7 @@ const images = {
     background: { src: 'assets/background.png', img: new Image(), loaded: false },
     asteroid: { src: 'assets/asteroid.png', img: new Image(), loaded: false },
     comet: { src: 'assets/comet.PNG', img: new Image(), loaded: false },
-    debris:: { src: 'assets/debris.png', img: new Image(), loaded: false },
+    debris: { src: 'assets/debris.png', img: new Image(), loaded: false },
     meteor: { src: 'assets/meteor.PNG', img: new Image(), loaded: false },
     space_junk: { src: 'assets/space_junk.PNG', img: new Image(), loaded: false },
     alien_probe: { src: 'assets/alien_probe.PNG', img: new Image(), loaded: false },
