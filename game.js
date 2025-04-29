@@ -3,9 +3,11 @@ const ctx = canvas ? canvas.getContext('2d') : null;
 
 // Debug: Verify canvas initialization
 if (!canvas || !ctx) {
-    console.error('Canvas or context not found. Ensure #gameCanvas exists in index.html');
+    console.error('Canvas or context not found. Ensure #gameCanvas exists in index.html and is not removed from DOM.');
+    // Stop execution to prevent further errors
+    throw new Error('Canvas initialization failed');
 } else {
-    console.log('Canvas initialized:', canvas.width, 'x', canvas.height);
+    console.log('Canvas initialized successfully:', canvas.width, 'x', canvas.height);
 }
 
 // Initialize Canvas Size
@@ -50,7 +52,7 @@ const images = {
     background: { src: 'assets/background.png', img: new Image(), loaded: false },
     asteroid: { src: 'assets/asteroid.png', img: new Image(), loaded: false },
     comet: { src: 'assets/comet.png', img: new Image(), loaded: false },
-    debris: { src: 'assets/debris.png', img: new Image(), loaded: false },
+    debris:: { src: 'assets/debris.png', img: new Image(), loaded: false },
     meteor: { src: 'assets/meteor.png', img: new Image(), loaded: false },
     space_junk: { src: 'assets/space_junk.png', img: new Image(), loaded: false },
     alien_probe: { src: 'assets/alien_probe.png', img: new Image(), loaded: false },
@@ -127,7 +129,7 @@ function preloadImages(callback) {
     let loadedCount = 0;
     const totalImages = Object.keys(images).length;
     const timeout = setTimeout(() => {
-        console.warn('Image loading timeout reached (10s)');
+        console.warn('Image loading timeout reached (10s). Proceeding with available images.');
         callback();
     }, 10000);
 
@@ -139,19 +141,20 @@ function preloadImages(callback) {
     }
 
     for (const key in images) {
+        console.log(`Attempting to load image: ${images[key].src}`);
         images[key].img.src = images[key].src;
         images[key].img.onload = () => {
             images[key].loaded = true;
             loadedCount++;
-            console.log(`Loaded ${key} image`);
+            console.log(`Successfully loaded ${key} image: ${images[key].src}`);
             if (loadedCount === totalImages) {
                 clearTimeout(timeout);
-                console.log('All images loaded');
+                console.log('All images loaded successfully');
                 callback();
             }
         };
         images[key].img.onerror = () => {
-            console.error(`Failed to load image: ${images[key].src}`);
+            console.error(`Failed to load image: ${images[key].src}. Check file path or network.');
             images[key].loaded = false;
             loadedCount++;
             if (loadedCount === totalImages) {
@@ -379,7 +382,7 @@ function menuLoop() {
 
     try {
         // Debug Logs
-        console.log(`Menu Frame: spaceObjects=${spaceObjects.length}, canvas=${canvas.width}x${canvas.height}`);
+        console.log(`Menu Frame: spaceObjects=${spaceObjects.length}, canvas=${canvas.width}x${canvas.height}, backgroundLoaded=${images.background.loaded}`);
 
         // Move Background
         backgroundY += backgroundSpeed;
@@ -390,12 +393,13 @@ function menuLoop() {
 
         // Draw Background
         if (images.background.loaded && images.background.img.complete) {
+            console.log('Drawing background image');
             ctx.drawImage(images.background.img, 0, backgroundY - canvas.height, canvas.width, canvas.height);
             ctx.drawImage(images.background.img, 0, backgroundY, canvas.width, canvas.height);
         } else {
+            console.warn('Background image not loaded or incomplete. Using black fallback.');
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            console.warn('Background image not loaded, using black fallback');
         }
 
         // Move and Draw Space Objects
@@ -421,9 +425,9 @@ function menuLoop() {
         ctx.fillStyle = 'blue';
         ctx.fillRect(canvas.width - 50, 10, 40, 40);
     } catch (error) {
-        console.error('Error in menuLoop:', error);
-        // Fallback: Draw red canvas to indicate issue
-        ctx.fillStyle = 'red';
+        console.error('Error in menuLoop:', error.message, error.stack);
+        // Fallback: Draw black canvas to indicate issue
+        ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
@@ -487,12 +491,13 @@ function gameLoop() {
 
         // Draw Background
         if (images.background.loaded && images.background.img.complete) {
+            console.log('Drawing background image');
             ctx.drawImage(images.background.img, 0, backgroundY - canvas.height, canvas.width, canvas.height);
             ctx.drawImage(images.background.img, 0, backgroundY, canvas.width, canvas.height);
         } else {
+            console.warn('Background image not loaded or incomplete. Using black fallback.');
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            console.warn('Background image not loaded, using black fallback');
         }
 
         // Move Player
@@ -677,9 +682,7 @@ function gameLoop() {
             }
         } else {
             ctx.fillStyle = 'red';
-            for (let i = 0; i < player.lives; i++) {
-                ctx.fillRect(10 + i * 40, canvas.height - 40, 30, 30);
-            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             console.warn('Heart image not loaded, using red fallback');
         }
 
@@ -724,9 +727,9 @@ function gameLoop() {
         ctx.fillStyle = 'blue';
         ctx.fillRect(canvas.width - 50, 10, 40, 40);
     } catch (error) {
-        console.error('Error in gameLoop:', error);
-        // Fallback: Draw red canvas
-        ctx.fillStyle = 'red';
+        console.error('Error in gameLoop:', error.message, error.stack);
+        // Fallback: Draw black canvas to indicate issue
+        ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
