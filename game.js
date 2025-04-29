@@ -50,11 +50,11 @@ let playerImg = null;
 const images = {
     background: { src: 'assets/background.png', img: new Image(), loaded: false },
     asteroid: { src: 'assets/asteroid.png', img: new Image(), loaded: false },
-    comet: { src: 'assets/comet.png', img: new Image(), loaded: false },
+    comet: { src: 'assets/comet.PNG', img: new Image(), loaded: false },
     debris: { src: 'assets/debris.png', img: new Image(), loaded: false },
-    meteor: { src: 'assets/meteor.png', img: new Image(), loaded: false },
-    space_junk: { src: 'assets/space_junk.png', img: new Image(), loaded: false },
-    alien_probe: { src: 'assets/alien_probe.png', img: new Image(), loaded: false },
+    meteor: { src: 'assets/meteor.PNG', img: new Image(), loaded: false },
+    space_junk: { src: 'assets/space_junk.PNG', img: new Image(), loaded: false },
+    alien_probe: { src: 'assets/alien_probe.PNG', img: new Image(), loaded: false },
     shield: { src: 'assets/shield.png', img: new Image(), loaded: false },
     doubleScore: { src: 'assets/double_score.png', img: new Image(), loaded: false },
     heart: { src: 'assets/heart.png', img: new Image(), loaded: false }
