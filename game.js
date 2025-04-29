@@ -4,7 +4,6 @@ const ctx = canvas ? canvas.getContext('2d') : null;
 // Debug: Verify canvas initialization
 if (!canvas || !ctx) {
     console.error('Canvas or context not found. Ensure #gameCanvas exists in index.html and is not removed from DOM.');
-    // Stop execution to prevent further errors
     throw new Error('Canvas initialization failed');
 } else {
     console.log('Canvas initialized successfully:', canvas.width, 'x', canvas.height);
@@ -51,11 +50,11 @@ let playerImg = null;
 const images = {
     background: { src: 'assets/background.png', img: new Image(), loaded: false },
     asteroid: { src: 'assets/asteroid.png', img: new Image(), loaded: false },
-    comet: { src: 'assets/comet.PNG', img: new Image(), loaded: false },
+    comet: { src: 'assets/comet.png', img: new Image(), loaded: false },
     debris: { src: 'assets/debris.png', img: new Image(), loaded: false },
-    meteor: { src: 'assets/meteor.PNG', img: new Image(), loaded: false },
-    space_junk: { src: 'assets/space_junk.PNG', img: new Image(), loaded: false },
-    alien_probe: { src: 'assets/alien_probe.PNG', img: new Image(), loaded: false },
+    meteor: { src: 'assets/meteor.png', img: new Image(), loaded: false },
+    space_junk: { src: 'assets/space_junk.png', img: new Image(), loaded: false },
+    alien_probe: { src: 'assets/alien_probe.png', img: new Image(), loaded: false },
     shield: { src: 'assets/shield.png', img: new Image(), loaded: false },
     doubleScore: { src: 'assets/double_score.png', img: new Image(), loaded: false },
     heart: { src: 'assets/heart.png', img: new Image(), loaded: false }
@@ -144,17 +143,22 @@ function preloadImages(callback) {
         console.log(`Attempting to load image: ${images[key].src}`);
         images[key].img.src = images[key].src;
         images[key].img.onload = () => {
-            images[key].loaded = true;
+            if (images[key].img.complete && images[key].img.naturalWidth > 0) {
+                images[key].loaded = true;
+                console.log(`Successfully loaded ${key} image: ${images[key].src}`);
+            } else {
+                console.warn(`Image loaded but invalid: ${images[key].src}`);
+                images[key].loaded = false;
+            }
             loadedCount++;
-            console.log(`Successfully loaded ${key} image: ${images[key].src}`);
             if (loadedCount === totalImages) {
                 clearTimeout(timeout);
-                console.log('All images loaded successfully');
+                console.log('All images processed');
                 callback();
             }
         };
         images[key].img.onerror = () => {
-            console.error(`Failed to load image: ${images[key].src}. Check file path or network.');
+            console.error(`Failed to load image: ${images[key].src}. Check file path, case sensitivity, or file integrity.`);
             images[key].loaded = false;
             loadedCount++;
             if (loadedCount === totalImages) {
@@ -176,25 +180,34 @@ function chooseShip(imgSrc, speed) {
         console.log('Menu spawn interval cleared');
     }
     spaceObjects = []; // Clear menu objects
-    document.getElementById('menu').style.display = 'none'; // Hide menu immediately
+    document.getElementById('menu').style.display = 'none';
     console.log('Menu hidden');
     playerImg = new Image();
     playerImg.onload = () => {
-        console.log(`Player image loaded: ${imgSrc}`);
-        player.width = 60;
-        player.height = 60;
-        player.speed = speed;
-        player.originalSpeed = speed;
-        player.x = canvas.width / 2 - player.width / 2;
-        player.y = canvas.height - player.height - 20;
-        gameRunning = true;
-        backgroundMusic.play();
-        startSpawning();
-        requestAnimationFrame(gameLoop);
+        if (playerImg.complete && playerImg.naturalWidth > 0) {
+            console.log(`Player image loaded: ${imgSrc}`);
+            player.width = 60;
+            player.height = 60;
+            player.speed = speed;
+            player.originalSpeed = speed;
+            player.x = canvas.width / 2 - player.width / 2;
+            player.y = canvas.height - player.height - 20;
+            gameRunning = true;
+            backgroundMusic.play();
+            startSpawning();
+            requestAnimationFrame(gameLoop);
+        } else {
+            console.warn(`Player image loaded but invalid: ${imgSrc}`);
+            startGameWithFallback(speed);
+        }
     };
     playerImg.onerror = () => {
         console.error(`Failed to load player image: ${imgSrc}`);
-        // Fallback: Start game with blue rectangle
+        startGameWithFallback(speed);
+    };
+    playerImg.src = imgSrc;
+
+    function startGameWithFallback(speed) {
         player.width = 60;
         player.height = 60;
         player.speed = speed;
@@ -205,9 +218,11 @@ function chooseShip(imgSrc, speed) {
         backgroundMusic.play();
         startSpawning();
         requestAnimationFrame(gameLoop);
-    };
-    playerImg.src = imgSrc;
+    }
 }
+
+// Debug: Confirm chooseShip is defined
+console.log('chooseShip function defined:', typeof chooseShip === 'function');
 
 // Handle Key Presses
 window.addEventListener('keydown', (e) => {
@@ -301,7 +316,7 @@ function startSpawning() {
 // Menu Spawn Interval
 function startMenuSpawning() {
     if (menuSpawnIntervalId) clearInterval(menuSpawnIntervalId);
-    menuSpawnIntervalId = setInterval(() => spawnSpaceObject(true), 1000); // Slower for menu
+    menuSpawnIntervalId = setInterval(() => spawnSpaceObject(true), 1000);
     console.log('Menu spawning started');
 }
 
@@ -381,7 +396,6 @@ function menuLoop() {
     if (gameRunning || !canvas || !ctx) return;
 
     try {
-        // Debug Logs
         console.log(`Menu Frame: spaceObjects=${spaceObjects.length}, canvas=${canvas.width}x${canvas.height}, backgroundLoaded=${images.background.loaded}`);
 
         // Move Background
@@ -392,12 +406,12 @@ function menuLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Draw Background
-        if (images.background.loaded && images.background.img.complete) {
+        if (images.background.loaded && images.background.img.complete && images.background.img.naturalWidth > 0) {
             console.log('Drawing background image');
             ctx.drawImage(images.background.img, 0, backgroundY - canvas.height, canvas.width, canvas.height);
             ctx.drawImage(images.background.img, 0, backgroundY, canvas.width, canvas.height);
         } else {
-            console.warn('Background image not loaded or incomplete. Using black fallback.');
+            console.warn('Background image not loaded or broken. Using black fallback.');
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
@@ -406,12 +420,12 @@ function menuLoop() {
         for (let i = 0; i < spaceObjects.length; i++) {
             const obj = spaceObjects[i];
             obj.y += obj.speed;
-            if (obj.img && obj.img.complete) {
+            if (obj.img && obj.img.complete && obj.img.naturalWidth > 0) {
                 ctx.drawImage(obj.img, obj.x, obj.y, obj.width, obj.height);
             } else {
                 ctx.fillStyle = obj.fallbackColor || 'gray';
                 ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
-                console.warn(`Space object image not loaded for ${obj.img.src}, using ${obj.fallbackColor} fallback`);
+                console.warn(`Space object image not loaded or broken for ${obj.img.src}, using ${obj.fallbackColor} fallback`);
             }
 
             // Remove off-screen
@@ -426,7 +440,6 @@ function menuLoop() {
         ctx.fillRect(canvas.width - 50, 10, 40, 40);
     } catch (error) {
         console.error('Error in menuLoop:', error.message, error.stack);
-        // Fallback: Draw black canvas to indicate issue
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
@@ -439,7 +452,6 @@ function gameLoop() {
     if (!gameRunning || isPaused || !canvas || !ctx) return;
 
     try {
-        // Debug Logs
         console.log(`Game Frame: gameRunning=${gameRunning}, isPaused=${isPaused}, spaceObjects=${spaceObjects.length}, powerUps=${powerUps.length}, projectiles=${projectiles.length}, lives=${player.lives}, canvas=${canvas.width}x${canvas.height}, level=${level}, title=${getPlayerTitle(level)}`);
 
         // Update Time
@@ -490,12 +502,12 @@ function gameLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Draw Background
-        if (images.background.loaded && images.background.img.complete) {
+        if (images.background.loaded && images.background.img.complete && images.background.img.naturalWidth > 0) {
             console.log('Drawing background image');
             ctx.drawImage(images.background.img, 0, backgroundY - canvas.height, canvas.width, canvas.height);
             ctx.drawImage(images.background.img, 0, backgroundY, canvas.width, canvas.height);
         } else {
-            console.warn('Background image not loaded or incomplete. Using black fallback.');
+            console.warn('Background image not loaded or broken. Using black fallback.');
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
@@ -505,12 +517,12 @@ function gameLoop() {
         if (keys['ArrowRight'] && player.x + player.width < canvas.width) player.x += player.speed;
 
         // Draw Player
-        if (playerImg && playerImg.complete) {
+        if (playerImg && playerImg.complete && playerImg.naturalWidth > 0) {
             ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
         } else {
             ctx.fillStyle = 'blue';
             ctx.fillRect(player.x, player.y, player.width, player.height);
-            console.warn('Player image not loaded, using blue fallback');
+            console.warn('Player image not loaded or broken, using blue fallback');
         }
 
         // Player Highlights
@@ -538,12 +550,12 @@ function gameLoop() {
         for (let i = 0; i < spaceObjects.length; i++) {
             const obj = spaceObjects[i];
             obj.y += obj.speed;
-            if (obj.img && obj.img.complete) {
+            if (obj.img && obj.img.complete && obj.img.naturalWidth > 0) {
                 ctx.drawImage(obj.img, obj.x, obj.y, obj.width, obj.height);
             } else {
                 ctx.fillStyle = obj.fallbackColor || 'gray';
                 ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
-                console.warn(`Space object image not loaded for ${obj.img.src}, using ${obj.fallbackColor} fallback`);
+                console.warn(`Space object image not loaded or broken for ${obj.img.src}, using ${obj.fallbackColor} fallback`);
             }
 
             // Collision with Player
@@ -592,17 +604,17 @@ function gameLoop() {
             const p = powerUps[i];
             p.y += p.speed;
             ctx.save();
-            if (p.img && p.img.complete) {
+            if (p.img && p.img.complete && p.img.naturalWidth > 0) {
                 ctx.strokeStyle = 'white';
                 ctx.lineWidth = 3;
-                ctx.globalAlpha = 0.5 + 0.5 * Math.sin(gameTime * 5);
+                ctx.globalAlpha = 0.3 + 0.7 * Math.sin(gameTime * 0.8);
                 ctx.strokeRect(p.x - 5, p.y - 5, p.width + 10, p.height + 10);
                 ctx.globalAlpha = 1;
                 ctx.drawImage(p.img, p.x, p.y, p.width, p.height);
             } else {
                 ctx.fillStyle = 'purple';
                 ctx.fillRect(p.x, p.y, p.width, p.height);
-                console.warn(`Power-up image not loaded for ${p.type}, using purple fallback`);
+                console.warn(`Power-up image not loaded or broken for ${p.type}, using purple fallback`);
             }
             ctx.restore();
 
@@ -676,14 +688,16 @@ function gameLoop() {
         }
 
         // Draw Lifeline Bar
-        if (images.heart.loaded && images.heart.img.complete) {
+        if (images.heart.loaded && images.heart.img.complete && images.heart.img.naturalWidth > 0) {
             for (let i = 0; i < player.lives; i++) {
                 ctx.drawImage(images.heart.img, 10 + i * 40, canvas.height - 40, 30, 30);
             }
         } else {
             ctx.fillStyle = 'red';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            console.warn('Heart image not loaded, using red fallback');
+            for (let i = 0; i < player.lives; i++) {
+                ctx.fillRect(10 + i * 40, canvas.height - 40, 30, 30);
+            }
+            console.warn('Heart image not loaded or broken, using red fallback');
         }
 
         // Draw Life Lost Notification
@@ -728,7 +742,6 @@ function gameLoop() {
         ctx.fillRect(canvas.width - 50, 10, 40, 40);
     } catch (error) {
         console.error('Error in gameLoop:', error.message, error.stack);
-        // Fallback: Draw black canvas to indicate issue
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
