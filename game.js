@@ -741,8 +741,8 @@ function endGame() {
     const title = getPlayerTitle(level);
     const scoreCard = document.getElementById('scoreCard');
     scoreCard.innerHTML = `
-        <h2>Nebula Nomad Score Card</h2>
-        <div class="scorecard-header">=== Mission Report ===</div>
+        <h2>Nebula Nomad Retro Space Shooter Score Card</h2>
+        <div class="scorecard-header">=== Cosmic Mission Report ===</div>
         <p>Player: ${playerName}</p>
         <p>Rank: ${title}</p>
         <p>Dodged: ${dodgedScore}</p>
@@ -753,7 +753,7 @@ function endGame() {
         <button onclick="restartGame()">Restart</button>
         <button onclick="downloadScoreCard()">Download Score</button>
         <button onclick="shareScoreCard()">Share Score</button>
-        <p class="coffee-note">Enjoying the game? <a href="https://www.buymeacoffee.com/yourname" target="_blank">Buy me a coffee! ☕</a></p>
+        <p class="coffee-note">Enjoying Nebula Nomad, the retro space shooter? <a href="https://www.buymeacoffee.com/yourname" target="_blank">Buy me a coffee! ☕</a></p>
     `;
     document.getElementById('gameOver').style.display = 'block';
     if (spawnIntervalId) clearInterval(spawnIntervalId);

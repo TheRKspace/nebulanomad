@@ -2,20 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Nebula Nomad</title>
+    <title>Nebula Nomad: Retro Space Shooter Game</title>
+    <meta name="description" content="Play Nebula Nomad, a free retro space shooter game. Dodge asteroids, collect power-ups, and climb ranks in this HTML5 cosmic adventure!">
+    <meta name="keywords" content="space shooter, retro game, HTML5 game, Nebula Nomad, free space arcade, browser space game">
+    <meta name="author" content="Your Name">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Search Console Verification -->
+	<meta name="google-site-verification" content="Jf_NBStHwbZFE3ArbQVt_w7QNEm73RMYUNn6VXyo5WY" />
+    <!-- Open Graph for Social Media -->
+    <meta property="og:title" content="Nebula Nomad: Retro Space Shooter Game">
+    <meta property="og:description" content="Play Nebula Nomad, a free retro space shooter game. Dodge asteroids, collect power-ups, and climb ranks in this HTML5 cosmic adventure!">
+    <meta property="og:image" content="https://therkspace.github.io/nebulanomad/assets/player1.png">
+    <meta property="og:url" content="https://therkspace.github.io/nebulanomad/">
+    <meta property="og:type" content="website">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Nebula Nomad: Retro Space Shooter Game">
+    <meta name="twitter:description" content="Play Nebula Nomad, a free retro space shooter game. Dodge asteroids, collect power-ups, and climb ranks in this HTML5 cosmic adventure!">
+    <meta name="twitter:image" content="https://therkspace.github.io/nebulanomad/assets/player1.png">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-Y"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-XXXXX-Y');
+    </script>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="menu">
         <h1>Nebula Nomad</h1>
+        <h2>Play Free Space Shooter Game</h2>
+        <p>Nebula Nomad is a thrilling retro space shooter game where you dodge asteroids, shoot enemies, and collect power-ups like shields and double scores. Play this free HTML5 game in your browser and climb cosmic ranks!</p>
         <input type="text" id="playerName" placeholder="Enter Your Name" maxlength="20">
         <div class="ships">
-            <img src="assets/player1.png" onclick="chooseShip('assets/player1.png', 10.5)">
-            <img src="assets/player2.png" onclick="chooseShip('assets/player2.png', 10.5)">
-            <img src="assets/player3.png" onclick="chooseShip('assets/player3.png', 10.5)">
-            <img src="assets/player4.png" onclick="chooseShip('assets/player4.png', 15)">
-            <img src="assets/player5.png" onclick="chooseShip('assets/player5.png', 7.5)">
+            <img src="assets/player1.png" alt="Nebula Nomad spaceship 1" onclick="chooseShip('assets/player1.png', 10.5)">
+            <img src="assets/player2.png" alt="Nebula Nomad spaceship 2" onclick="chooseShip('assets/player2.png', 10.5)">
+            <img src="assets/player3.png" alt="Nebula Nomad spaceship 3" onclick="chooseShip('assets/player3.png', 10.5)">
+            <img src="assets/player4.png" alt="Nebula Nomad spaceship 4" onclick="chooseShip('assets/player4.png', 15)">
+            <img src="assets/player5.png" alt="Nebula Nomad spaceship 5" onclick="chooseShip('assets/player5.png', 7.5)">
         </div>
         <p class="coffee-note">Enjoying the game? <a href="https://www.buymeacoffee.com/yourname" target="_blank">Buy me a coffee! ☕</a></p>
     </div>
@@ -29,7 +56,7 @@
 
     <div id="pauseScreen" style="display:none;">
         <h1>Paused</h1>
-        <img src="assets/ad_space.png" alt="Space Ad" style="width: 300px; margin: 20px;">
+        <img src="assets/ad_space.png" alt="Nebula Nomad space ad" style="width: 300px; margin: 20px;">
         <p>Explore the Cosmos with Space Adventures!</p>
         <button onclick="togglePause()">Resume</button>
     </div>
