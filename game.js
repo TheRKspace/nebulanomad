@@ -144,7 +144,6 @@ function preloadImages(callback) {
         images[key].img.src = images[key].src;
         images[key].img.onload = () => {
             if (images[key].img.complete && images[key].img.naturalWidth > 0) {
-                console.log(`Image loaded: ${images[key].src}, width=${images[key].img.naturalWidth}, height=${images[key].img.naturalHeight}`);
                 images[key].loaded = true;
                 console.log(`Successfully loaded ${key} image: ${images[key].src}`);
             } else {
@@ -159,7 +158,6 @@ function preloadImages(callback) {
             }
         };
         images[key].img.onerror = () => {
-            console.error(`Image load error: ${images[key].src}. Check file existence, path, or server access.`);
             console.error(`Failed to load image: ${images[key].src}. Check file path, case sensitivity, or file integrity.`);
             images[key].loaded = false;
             loadedCount++;
@@ -177,7 +175,6 @@ function chooseShip(imgSrc, speed) {
     console.log(`chooseShip called: imgSrc=${imgSrc}, speed=${speed}`);
     playerName = document.getElementById('playerName').value.trim() || 'Player';
     // Stop menu loop
-    console.log('Stopping menu spawn interval');
     if (menuSpawnIntervalId) {
         clearInterval(menuSpawnIntervalId);
         console.log('Menu spawn interval cleared');
@@ -186,7 +183,6 @@ function chooseShip(imgSrc, speed) {
     document.getElementById('menu').style.display = 'none';
     console.log('Menu hidden');
     playerImg = new Image();
-    console.log(`Loading player image: ${imgSrc}`);
     playerImg.onload = () => {
         if (playerImg.complete && playerImg.naturalWidth > 0) {
             console.log(`Player image loaded: ${imgSrc}`);
@@ -202,7 +198,6 @@ function chooseShip(imgSrc, speed) {
             requestAnimationFrame(gameLoop);
         } else {
             console.warn(`Player image loaded but invalid: ${imgSrc}`);
-            console.log('Starting game with fallback due to invalid player image');
             startGameWithFallback(speed);
         }
     };
@@ -210,7 +205,6 @@ function chooseShip(imgSrc, speed) {
         console.error(`Failed to load player image: ${imgSrc}`);
         startGameWithFallback(speed);
     };
-    console.log(`Setting player image src: ${imgSrc}`);
     playerImg.src = imgSrc;
 
     function startGameWithFallback(speed) {
@@ -224,7 +218,6 @@ function chooseShip(imgSrc, speed) {
         backgroundMusic.play();
         startSpawning();
         requestAnimationFrame(gameLoop);
-        console.log('Game started with fallback settings');
     }
 }
 
@@ -254,32 +247,32 @@ function spawnSpaceObject(isMenu = false) {
     if (type < 0.1667) {
         img = images.asteroid.img;
         size = 40 + Math.random() * 30;
-        speed = 2 + (isMenu ? 0 : level * 1.2);
+        speed = 2 + (isMenu ? 0 : level * 1.5);
         fallbackColor = 'gray';
     } else if (type < 0.3334) {
         img = images.comet.img;
         size = 20 + Math.random() * 20;
-        speed = 4 + (isMenu ? 0 : level * 1.6);
+        speed = 4 + (isMenu ? 0 : level * 2);
         fallbackColor = 'gray';
     } else if (type < 0.5001) {
         img = images.debris.img;
         size = 60 + Math.random() * 40;
-        speed = 1 + (isMenu ? 0 : level * 0.8);
+        speed = 1 + (isMenu ? 0 : level * 1);
         fallbackColor = 'gray';
     } else if (type < 0.6668) {
         img = images.meteor.img;
         size = 15 + Math.random() * 10;
-        speed = 5 + (isMenu ? 0 : level * 2);
+        speed = 5 + (isMenu ? 0 : level * 2.5);
         fallbackColor = 'orange';
     } else if (type < 0.8335) {
         img = images.space_junk.img;
         size = 50 + Math.random() * 30;
-        speed = 1.5 + (isMenu ? 0 : level * 0.96);
+        speed = 1.5 + (isMenu ? 0 : level * 1.2);
         fallbackColor = 'brown';
     } else {
         img = images.alien_probe.img;
         size = 70 + Math.random() * 30;
-        speed = 0.8 + (isMenu ? 0 : level * 0.64);
+        speed = 0.8 + (isMenu ? 0 : level * 0.8);
         fallbackColor = 'green';
     }
     spaceObjects.push({
@@ -776,7 +769,7 @@ function endGame() {
         <button onclick="restartGame()">Restart</button>
         <button onclick="downloadScoreCard()">Download Score</button>
         <button onclick="shareScoreCard()">Share Score</button>
-        <a href="https://www.buymeacoffee.com/TheRetroGameCoder" target="_blank" class="coffee-button">Support Nebula Nomad! ☕</a>
+        <p class="coffee-note">Enjoying Nebula Nomad, the retro space shooter? <a href="https://www.buymeacoffee.com/TheRetroGameCoder" target="_blank">Buy me a coffee! ☕</a></p>
     `;
     document.getElementById('gameOver').style.display = 'block';
     if (spawnIntervalId) clearInterval(spawnIntervalId);
